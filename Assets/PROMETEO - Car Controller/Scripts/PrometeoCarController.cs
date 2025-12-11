@@ -116,6 +116,11 @@ public class PrometeoCarController : MonoBehaviour
       public InputActionReference handbrakeAction;
       public InputActionReference accelerateAction;
       public InputActionReference reverseAction;
+      [Range(0f,1f)] public float joystickSteerDeadzone = 0.15f;
+      [Range(0f,1f)] public float accelerateButtonThreshold = 0.5f;
+      [Range(0f,1f)] public float reverseButtonThreshold = 0.5f;
+      [Range(0f,1f)] public float handbrakeButtonThreshold = 0.5f;
+      public bool decelerateOnNoThrottle = true;
 
     //CAR DATA
 
@@ -291,6 +296,7 @@ public class PrometeoCarController : MonoBehaviour
           Vector2 m = move.action.ReadValue<Vector2>();
           float x = m.x;
           float y = m.y;
+          if(Mathf.Abs(x) < joystickSteerDeadzone) x = 0f;
           bool buttonThrottleAssigned = (accelerateAction != null && accelerateAction.action != null) || (reverseAction != null && reverseAction.action != null);
 
           if(!buttonThrottleAssigned){
@@ -317,7 +323,7 @@ public class PrometeoCarController : MonoBehaviour
           }
 
           float hb = handbrakeAction != null && handbrakeAction.action != null ? handbrakeAction.action.ReadValue<float>() : 0f;
-          if(hb > 0.5f){
+          if(hb > handbrakeButtonThreshold){
             CancelInvoke("DecelerateCar");
             deceleratingCar = false;
             Handbrake();
@@ -328,17 +334,17 @@ public class PrometeoCarController : MonoBehaviour
           if(buttonThrottleAssigned){
             float acc = accelerateAction != null && accelerateAction.action != null ? accelerateAction.action.ReadValue<float>() : 0f;
             float rev = reverseAction != null && reverseAction.action != null ? reverseAction.action.ReadValue<float>() : 0f;
-            if(acc > 0.5f){
+            if(acc > accelerateButtonThreshold){
               CancelInvoke("DecelerateCar");
               deceleratingCar = false;
               GoForward();
-            }else if(rev > 0.5f){
+            }else if(rev > reverseButtonThreshold){
               CancelInvoke("DecelerateCar");
               deceleratingCar = false;
               GoReverse();
             }else{
               ThrottleOff();
-              if(!deceleratingCar){
+              if(decelerateOnNoThrottle && !deceleratingCar){
                 InvokeRepeating("DecelerateCar", 0f, 0.1f);
                 deceleratingCar = true;
               }
@@ -379,7 +385,7 @@ public class PrometeoCarController : MonoBehaviour
         try{
           if(carEngineSound != null && carEngineSound.isActiveAndEnabled){
             float engineSoundPitch = initialCarEngineSoundPitch + (Mathf.Abs(carRigidbody.linearVelocity.magnitude) / 25f);
-            carEngineSound.pitch = engineSoundPitch;
+            carEngineSound.pitch = Mathf.Clamp(engineSoundPitch, 0.5f, 3f);
           }
           bool shouldScreech = (isDrifting) || (isTractionLocked && Mathf.Abs(carSpeed) > 12f);
           if(tireScreechSound != null && tireScreechSound.isActiveAndEnabled){
@@ -417,7 +423,8 @@ public class PrometeoCarController : MonoBehaviour
       if(steeringAxis < -1f){
         steeringAxis = -1f;
       }
-      var steeringAngle = steeringAxis * maxSteeringAngle;
+      var speedFactor = Mathf.Lerp(1f, 0.6f, Mathf.Clamp01(Mathf.Abs(localVelocityZ) / Mathf.Max(1f, maxSpeed)));
+      var steeringAngle = steeringAxis * maxSteeringAngle * speedFactor;
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
@@ -428,7 +435,8 @@ public class PrometeoCarController : MonoBehaviour
       if(steeringAxis > 1f){
         steeringAxis = 1f;
       }
-      var steeringAngle = steeringAxis * maxSteeringAngle;
+      var speedFactor = Mathf.Lerp(1f, 0.6f, Mathf.Clamp01(Mathf.Abs(localVelocityZ) / Mathf.Max(1f, maxSpeed)));
+      var steeringAngle = steeringAxis * maxSteeringAngle * speedFactor;
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
@@ -444,7 +452,8 @@ public class PrometeoCarController : MonoBehaviour
       if(Mathf.Abs(frontLeftCollider.steerAngle) < 1f){
         steeringAxis = 0f;
       }
-      var steeringAngle = steeringAxis * maxSteeringAngle;
+      var speedFactor = Mathf.Lerp(1f, 0.6f, Mathf.Clamp01(Mathf.Abs(localVelocityZ) / Mathf.Max(1f, maxSpeed)));
+      var steeringAngle = steeringAxis * maxSteeringAngle * speedFactor;
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
