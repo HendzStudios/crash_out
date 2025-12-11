@@ -114,6 +114,8 @@ public class PrometeoCarController : MonoBehaviour
       [Space(10)]
       public InputActionReference move;
       public InputActionReference handbrakeAction;
+      public InputActionReference accelerateAction;
+      public InputActionReference reverseAction;
 
     //CAR DATA
 
@@ -246,10 +248,14 @@ public class PrometeoCarController : MonoBehaviour
     void OnEnable(){
       move?.action.Enable();
       handbrakeAction?.action.Enable();
+      accelerateAction?.action.Enable();
+      reverseAction?.action.Enable();
     }
     void OnDisable(){
       move?.action.Disable();
       handbrakeAction?.action.Disable();
+      accelerateAction?.action.Disable();
+      reverseAction?.action.Disable();
     }
 
     // Update is called once per frame
@@ -316,11 +322,40 @@ public class PrometeoCarController : MonoBehaviour
             RecoverTraction();
           }
 
-          if(Mathf.Abs(y) <= 0.1f){
-            ThrottleOff();
-            if(hb <= 0.5f && !deceleratingCar){
-              InvokeRepeating("DecelerateCar", 0f, 0.1f);
-              deceleratingCar = true;
+          bool buttonThrottleAssigned = (accelerateAction != null && accelerateAction.action != null) || (reverseAction != null && reverseAction.action != null);
+          if(buttonThrottleAssigned){
+            float acc = accelerateAction != null && accelerateAction.action != null ? accelerateAction.action.ReadValue<float>() : 0f;
+            float rev = reverseAction != null && reverseAction.action != null ? reverseAction.action.ReadValue<float>() : 0f;
+            if(acc > 0.5f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoForward();
+            }else if(rev > 0.5f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoReverse();
+            }else{
+              ThrottleOff();
+              if(hb <= 0.5f && !deceleratingCar){
+                InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                deceleratingCar = true;
+              }
+            }
+          }else{
+            if(y > 0.1f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoForward();
+            }else if(y < -0.1f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoReverse();
+            }else{
+              ThrottleOff();
+              if(hb <= 0.5f && !deceleratingCar){
+                InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                deceleratingCar = true;
+              }
             }
           }
         }
