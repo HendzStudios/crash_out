@@ -291,16 +291,19 @@ public class PrometeoCarController : MonoBehaviour
           Vector2 m = move.action.ReadValue<Vector2>();
           float x = m.x;
           float y = m.y;
+          bool buttonThrottleAssigned = (accelerateAction != null && accelerateAction.action != null) || (reverseAction != null && reverseAction.action != null);
 
-          if(y > 0.1f){
-            CancelInvoke("DecelerateCar");
-            deceleratingCar = false;
-            GoForward();
-          }
-          if(y < -0.1f){
-            CancelInvoke("DecelerateCar");
-            deceleratingCar = false;
-            GoReverse();
+          if(!buttonThrottleAssigned){
+            if(y > 0.1f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoForward();
+            }
+            if(y < -0.1f){
+              CancelInvoke("DecelerateCar");
+              deceleratingCar = false;
+              GoReverse();
+            }
           }
 
           if(x < -0.1f){
@@ -322,7 +325,6 @@ public class PrometeoCarController : MonoBehaviour
             RecoverTraction();
           }
 
-          bool buttonThrottleAssigned = (accelerateAction != null && accelerateAction.action != null) || (reverseAction != null && reverseAction.action != null);
           if(buttonThrottleAssigned){
             float acc = accelerateAction != null && accelerateAction.action != null ? accelerateAction.action.ReadValue<float>() : 0f;
             float rev = reverseAction != null && reverseAction.action != null ? reverseAction.action.ReadValue<float>() : 0f;
@@ -336,23 +338,7 @@ public class PrometeoCarController : MonoBehaviour
               GoReverse();
             }else{
               ThrottleOff();
-              if(hb <= 0.5f && !deceleratingCar){
-                InvokeRepeating("DecelerateCar", 0f, 0.1f);
-                deceleratingCar = true;
-              }
-            }
-          }else{
-            if(y > 0.1f){
-              CancelInvoke("DecelerateCar");
-              deceleratingCar = false;
-              GoForward();
-            }else if(y < -0.1f){
-              CancelInvoke("DecelerateCar");
-              deceleratingCar = false;
-              GoReverse();
-            }else{
-              ThrottleOff();
-              if(hb <= 0.5f && !deceleratingCar){
+              if(!deceleratingCar){
                 InvokeRepeating("DecelerateCar", 0f, 0.1f);
                 deceleratingCar = true;
               }
