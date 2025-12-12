@@ -1,11 +1,11 @@
 /*
-MESSAGE FROM CREATOR: This script was coded by Mena. You can use it in your games either these are commercial or
-personal projects. You can even add or remove functions as you wish. However, you cannot sell copies of this
-script by itself, since it is originally distributed as a free product.
-I wish you the best for your project. Good luck!
+MENSAGEM DO CRIADOR: Este script foi codificado por Mena. Você pode usá‑lo nos seus jogos, sejam comerciais ou
+projetos pessoais. Você pode até adicionar ou remover funções como desejar. No entanto, você não pode vender cópias
+desse script isoladamente, pois ele é originalmente distribuído como um produto gratuito.
+Desejo o melhor para o seu projeto. Boa sorte!
 
-P.S: If you need more cars, you can check my other vehicle assets on the Unity Asset Store, perhaps you could find
-something useful for your game. Best regards, Mena.
+P.S.: Se você precisa de mais carros, pode conferir meus outros assets de veículos na Unity Asset Store; talvez
+você encontre algo útil para o seu jogo. Atenciosamente, Mena.
 */
 
 using System;
@@ -17,7 +17,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 
-public class PrometeoCarController : MonoBehaviour
+public class CarController : MonoBehaviour
 {
 
     //CAR SETUP
@@ -26,37 +26,37 @@ public class PrometeoCarController : MonoBehaviour
       //[Header("CAR SETUP")]
       [Space(10)]
       [Range(20, 190)]
-      public int maxSpeed = 90; //The maximum speed that the car can reach in km/h.
+      public int maxSpeed = 90; //Velocidade máxima que o carro pode atingir em km/h.
       [Range(10, 120)]
-      public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
+      public int maxReverseSpeed = 45; //Velocidade máxima que o carro pode atingir em marcha à ré em km/h.
       [Range(1, 10)]
-      public int accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
+      public int accelerationMultiplier = 2; // Quão rápido o carro acelera. 1 é lento e 10 é o mais rápido.
       [Space(10)]
       [Range(10, 45)]
-      public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
+      public int maxSteeringAngle = 27; // Ângulo máximo que os pneus podem alcançar ao girar o volante.
       [Range(0.1f, 1f)]
-      public float steeringSpeed = 0.5f; // How fast the steering wheel turns.
+      public float steeringSpeed = 0.5f; // Velocidade com que o volante gira.
       [Space(10)]
       [Range(100, 600)]
-      public int brakeForce = 350; // The strength of the wheel brakes.
+      public int brakeForce = 350; // Força dos freios das rodas.
       [Range(1, 10)]
-      public int decelerationMultiplier = 2; // How fast the car decelerates when the user is not using the throttle.
+      public int decelerationMultiplier = 2; // Quão rápido o carro desacelera quando não há aceleração.
       [Range(1, 10)]
-      public int handbrakeDriftMultiplier = 5; // How much grip the car loses when the user hit the handbrake.
+      public int handbrakeDriftMultiplier = 5; // Quanto de aderência o carro perde ao usar o freio de mão.
       [Space(10)]
-      public Vector3 bodyMassCenter; // This is a vector that contains the center of mass of the car. I recommend to set this value
-                                    // in the points x = 0 and z = 0 of your car. You can select the value that you want in the y axis,
-                                    // however, you must notice that the higher this value is, the more unstable the car becomes.
-                                    // Usually the y value goes from 0 to 1.5.
+      public Vector3 bodyMassCenter; // Vetor que contém o centro de massa do carro. Recomendo definir este valor
+                                    // nos pontos x = 0 e z = 0 do seu carro. Você pode escolher o valor desejado no eixo y,
+                                    // porém, quanto maior este valor, mais instável o carro se torna.
+                                    // Normalmente o valor de y vai de 0 a 1.5.
 
     //WHEELS
 
       //[Header("WHEELS")]
 
       /*
-      The following variables are used to store the wheels' data of the car. We need both the mesh-only game objects and wheel
-      collider components of the wheels. The wheel collider components and 3D meshes of the wheels cannot come from the same
-      game object; they must be separate game objects.
+      As variáveis a seguir armazenam os dados das rodas do carro. Precisamos dos objetos apenas de malha (mesh)
+      e dos componentes WheelCollider das rodas. Os WheelColliders e as malhas 3D das rodas não podem vir do mesmo
+      GameObject; eles devem ser GameObjects separados.
       */
       public GameObject frontLeftMesh;
       public WheelCollider frontLeftCollider;
@@ -75,15 +75,15 @@ public class PrometeoCarController : MonoBehaviour
       [Space(20)]
       //[Header("EFFECTS")]
       [Space(10)]
-      //The following variable lets you to set up particle systems in your car
+      //A variável abaixo permite configurar sistemas de partículas no carro
       public bool useEffects = false;
 
-      // The following particle systems are used as tire smoke when the car drifts.
+      // Os sistemas de partículas abaixo são usados como fumaça do pneu quando o carro derrapa.
       public ParticleSystem RLWParticleSystem;
       public ParticleSystem RRWParticleSystem;
 
       [Space(10)]
-      // The following trail renderers are used as tire skids when the car loses traction.
+      // Os trail renderers abaixo simulam marcas de pneus quando o carro perde tração.
       public TrailRenderer RLWTireSkid;
       public TrailRenderer RRWTireSkid;
 
@@ -92,7 +92,7 @@ public class PrometeoCarController : MonoBehaviour
       [Space(20)]
       //[Header("UI")]
       [Space(10)]
-      //The following variable lets you to set up a UI text to display the speed of your car.
+      //A variável abaixo permite configurar um texto de UI para exibir a velocidade do carro.
       public bool useUI = false;
       public Text carSpeedText; // Used to store the UI object that is going to show the speed of the car.
 
@@ -101,11 +101,11 @@ public class PrometeoCarController : MonoBehaviour
       [Space(20)]
       //[Header("Sounds")]
       [Space(10)]
-      //The following variable lets you to set up sounds for your car such as the car engine or tire screech sounds.
+      //A variável abaixo permite configurar sons do carro como motor e chiado dos pneus.
       public bool useSounds = false;
-      public AudioSource carEngineSound; // This variable stores the sound of the car engine.
-      public AudioSource tireScreechSound; // This variable stores the sound of the tire screech (when the car is drifting).
-      float initialCarEngineSoundPitch; // Used to store the initial pitch of the car engine sound.
+      public AudioSource carEngineSound; // Armazena o som do motor do carro.
+      public AudioSource tireScreechSound; // Armazena o som do chiado dos pneus (quando o carro derrapa).
+      float initialCarEngineSoundPitch; // Armazena o pitch inicial do som do motor.
 
     //CONTROLS
 
@@ -160,15 +160,14 @@ public class PrometeoCarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-      //In this part, we set the 'carRigidbody' value with the Rigidbody attached to this
-      //gameObject. Also, we define the center of mass of the car with the Vector3 given
-      //in the inspector.
+      //Nesta parte, definimos 'carRigidbody' com o Rigidbody anexado a este GameObject.
+      //Também definimos o centro de massa do carro com o Vector3 fornecido no inspetor.
       carRigidbody = gameObject.GetComponent<Rigidbody>();
       carRigidbody.centerOfMass = bodyMassCenter;
 
-      //Initial setup to calculate the drift value of the car. This part could look a bit
-      //complicated, but do not be afraid, the only thing we're doing here is to save the default
-      //friction values of the car wheels so we can set an appropiate drifting value later.
+      //Configuração inicial para calcular o valor de derrapagem do carro. Esta parte pode parecer
+      //complicada, mas estamos apenas salvando os valores padrão de fricção das rodas para ajustar
+      //um valor apropriado de derrapagem depois.
       FLwheelFriction = new WheelFrictionCurve ();
         FLwheelFriction.extremumSlip = frontLeftCollider.sidewaysFriction.extremumSlip;
         FLWextremumSlip = frontLeftCollider.sidewaysFriction.extremumSlip;
@@ -198,14 +197,14 @@ public class PrometeoCarController : MonoBehaviour
         RRwheelFriction.asymptoteValue = rearRightCollider.sidewaysFriction.asymptoteValue;
         RRwheelFriction.stiffness = rearRightCollider.sidewaysFriction.stiffness;
 
-        // We save the initial pitch of the car engine sound.
+        // Salvamos o pitch inicial do som do motor do carro.
         if(carEngineSound != null){
           initialCarEngineSoundPitch = carEngineSound.pitch;
         }
 
-        // We invoke 2 methods inside this script. CarSpeedUI() changes the text of the UI object that stores
-        // the speed of the car and CarSounds() controls the engine and drifting sounds. Both methods are invoked
-        // in 0 seconds, and repeatedly called every 0.1 seconds.
+        // Invocamos 2 métodos neste script. CarSpeedUI() atualiza o texto de UI que mostra a velocidade do carro
+        // e CarSounds() controla os sons do motor e da derrapagem. Ambos são invocados em 0 segundos e repetidos
+        // a cada 0.1 segundos.
         if(useUI){
           InvokeRepeating("CarSpeedUI", 0f, 0.1f);
         }else if(!useUI){
@@ -276,17 +275,14 @@ public class PrometeoCarController : MonoBehaviour
       // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
       localVelocityZ = transform.InverseTransformDirection(carRigidbody.linearVelocity).z;
 
-      //CAR PHYSICS
+      //FÍSICA DO CARRO
 
       /*
-      The next part is regarding to the car controller. First, it checks if the user wants to use touch controls (for
-      mobile devices) or analog input controls (WASD + Space).
+      A próxima parte diz respeito ao controlador do carro. Primeiro, verificamos o tipo de entrada (WASD, joystick, botões).
 
-      The following methods are called whenever a certain key is pressed. For example, in the first 'if' we call the
-      method GoForward() if the user has pressed W.
+      Os métodos a seguir são chamados conforme a entrada. Por exemplo, chamamos GoForward() quando há aceleração.
 
-      In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
-      A (turn left), D (turn right) or Space bar (handbrake).
+      Aqui especificamos o que o carro faz ao acelerar, ré, virar à esquerda/direita e usar o freio de mão.
       */
       {
 
@@ -361,7 +357,7 @@ public class PrometeoCarController : MonoBehaviour
 
     }
 
-    // This method converts the car speed data from float to string, and then set the text of the UI carSpeedText with this value.
+    // Converte a velocidade do carro (float) para string e atualiza o texto de UI carSpeedText com este valor.
     public void CarSpeedUI(){
 
       if(useUI){
@@ -375,10 +371,8 @@ public class PrometeoCarController : MonoBehaviour
 
     }
 
-    // This method controls the car sounds. For example, the car engine will sound slow when the car speed is low because the
-    // pitch of the sound will be at its lowest point. On the other hand, it will sound fast when the car speed is high because
-    // the pitch of the sound will be the sum of the initial pitch + the car speed divided by 100f.
-    // Apart from that, the tireScreechSound will play whenever the car starts drifting or losing traction.
+    // Controla os sons do carro. O motor soa mais lento em baixa velocidade (pitch menor) e mais rápido em alta velocidade
+    // (pitch maior: pitch inicial + velocidade/25). Além disso, o chiado do pneu toca quando há derrapagem ou perda de tração.
     public void CarSounds(){
 
       if(useSounds){
@@ -414,10 +408,10 @@ public class PrometeoCarController : MonoBehaviour
     }
 
     //
-    //STEERING METHODS
+    //MÉTODOS DE DIREÇÃO
     //
 
-    //The following method turns the front car wheels to the left. The speed of this movement will depend on the steeringSpeed variable.
+    //Vira as rodas dianteiras para a esquerda. A velocidade desse movimento depende de steeringSpeed.
     public void TurnLeft(){
       steeringAxis = steeringAxis - (Time.deltaTime * 10f * steeringSpeed);
       if(steeringAxis < -1f){
@@ -429,7 +423,7 @@ public class PrometeoCarController : MonoBehaviour
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
 
-    //The following method turns the front car wheels to the right. The speed of this movement will depend on the steeringSpeed variable.
+    //Vira as rodas dianteiras para a direita. A velocidade desse movimento depende de steeringSpeed.
     public void TurnRight(){
       steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
       if(steeringAxis > 1f){
@@ -441,8 +435,7 @@ public class PrometeoCarController : MonoBehaviour
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
 
-    //The following method takes the front car wheels to their default position (rotation = 0). The speed of this movement will depend
-    // on the steeringSpeed variable.
+    //Retorna as rodas dianteiras à posição padrão (rotação = 0). A velocidade desse movimento depende de steeringSpeed.
     public void ResetSteeringAngle(){
       if(steeringAxis < 0f){
         steeringAxis = steeringAxis + (Time.deltaTime * 10f * steeringSpeed);
@@ -458,7 +451,7 @@ public class PrometeoCarController : MonoBehaviour
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
 
-    // This method matches both the position and rotation of the WheelColliders with the WheelMeshes.
+    // Sincroniza posição e rotação dos WheelColliders com as malhas 3D das rodas (WheelMeshes).
     void AnimateWheelMeshes(){
       try{
         Quaternion FLWRotation;
@@ -490,13 +483,12 @@ public class PrometeoCarController : MonoBehaviour
     }
 
     //
-    //ENGINE AND BRAKING METHODS
+    //MÉTODOS DE MOTOR E FREIO
     //
 
-    // This method apply positive torque to the wheels in order to go forward.
+    // Aplica torque positivo às rodas para ir para frente.
     public void GoForward(){
-      //If the forces aplied to the rigidbody in the 'x' asis are greater than
-      //3f, it means that the car is losing traction, then the car will start emitting particle systems.
+      //Se as forças aplicadas ao rigidbody no eixo 'x' forem maiores que 2.5f, indica perda de tração; emitir partículas.
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
         DriftCarPS();
@@ -504,19 +496,18 @@ public class PrometeoCarController : MonoBehaviour
         isDrifting = false;
         DriftCarPS();
       }
-      // The following part sets the throttle power to 1 smoothly.
+      // Ajusta a potência de aceleração até 1 de forma suave.
       throttleAxis = throttleAxis + (Time.deltaTime * 3f);
       if(throttleAxis > 1f){
         throttleAxis = 1f;
       }
-      //If the car is going backwards, then apply brakes in order to avoid strange
-      //behaviours. If the local velocity in the 'z' axis is less than -1f, then it
-      //is safe to apply positive torque to go forward.
+      //Se o carro estiver indo para trás, aplicar freio para evitar comportamentos estranhos.
+      //Se a velocidade local em 'z' for menor que -1f, é seguro aplicar torque positivo para ir para frente.
       if(localVelocityZ < -1f){
         Brakes();
       }else{
         if(Mathf.RoundToInt(carSpeed) < maxSpeed){
-          //Apply positive torque in all wheels to go forward if maxSpeed has not been reached.
+          //Aplicar torque positivo em todas as rodas para ir para frente se maxSpeed não foi atingida.
           frontLeftCollider.brakeTorque = 0;
           frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
           frontRightCollider.brakeTorque = 0;
@@ -526,9 +517,8 @@ public class PrometeoCarController : MonoBehaviour
           rearRightCollider.brakeTorque = 0;
           rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
         }else {
-          // If the maxSpeed has been reached, then stop applying torque to the wheels.
-          // IMPORTANT: The maxSpeed variable should be considered as an approximation; the speed of the car
-          // could be a bit higher than expected.
+          // Se a maxSpeed foi atingida, parar de aplicar torque nas rodas.
+          // IMPORTANTE: maxSpeed é uma aproximação; a velocidade real pode ser um pouco maior.
     			frontLeftCollider.motorTorque = 0;
     			frontRightCollider.motorTorque = 0;
           rearLeftCollider.motorTorque = 0;
@@ -537,7 +527,7 @@ public class PrometeoCarController : MonoBehaviour
       }
     }
 
-    // This method apply negative torque to the wheels in order to go backwards.
+    // Aplica torque negativo às rodas para ir para trás (ré).
     public void GoReverse(){
       //If the forces aplied to the rigidbody in the 'x' asis are greater than
       //3f, it means that the car is losing traction, then the car will start emitting particle systems.
@@ -548,19 +538,18 @@ public class PrometeoCarController : MonoBehaviour
         isDrifting = false;
         DriftCarPS();
       }
-      // The following part sets the throttle power to -1 smoothly.
+      // Ajusta a potência de aceleração até -1 de forma suave.
       throttleAxis = throttleAxis - (Time.deltaTime * 3f);
       if(throttleAxis < -1f){
         throttleAxis = -1f;
       }
-      //If the car is still going forward, then apply brakes in order to avoid strange
-      //behaviours. If the local velocity in the 'z' axis is greater than 1f, then it
-      //is safe to apply negative torque to go reverse.
+      //Se o carro ainda estiver indo para frente, aplicar freio para evitar comportamentos estranhos.
+      //Se a velocidade local em 'z' for maior que 1f, é seguro aplicar torque negativo para ré.
       if(localVelocityZ > 1f){
         Brakes();
       }else{
         if(Mathf.Abs(Mathf.RoundToInt(carSpeed)) < maxReverseSpeed){
-          //Apply negative torque in all wheels to go in reverse if maxReverseSpeed has not been reached.
+          //Aplicar torque negativo em todas as rodas para ir em ré se maxReverseSpeed não foi atingida.
           frontLeftCollider.brakeTorque = 0;
           frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
           frontRightCollider.brakeTorque = 0;
@@ -570,9 +559,8 @@ public class PrometeoCarController : MonoBehaviour
           rearRightCollider.brakeTorque = 0;
           rearRightCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
         }else {
-          //If the maxReverseSpeed has been reached, then stop applying torque to the wheels.
-          // IMPORTANT: The maxReverseSpeed variable should be considered as an approximation; the speed of the car
-          // could be a bit higher than expected.
+          // Se maxReverseSpeed foi atingida, parar de aplicar torque nas rodas.
+          // IMPORTANTE: maxReverseSpeed é uma aproximação; a velocidade real pode ser um pouco maior.
     			frontLeftCollider.motorTorque = 0;
     			frontRightCollider.motorTorque = 0;
           rearLeftCollider.motorTorque = 0;
@@ -581,7 +569,7 @@ public class PrometeoCarController : MonoBehaviour
       }
     }
 
-    //The following function set the motor torque to 0 (in case the user is not pressing either W or S).
+    //Define o torque do motor como 0 (quando não está acelerando nem dando ré).
     public void ThrottleOff(){
       frontLeftCollider.motorTorque = 0;
       frontRightCollider.motorTorque = 0;
@@ -589,9 +577,8 @@ public class PrometeoCarController : MonoBehaviour
       rearRightCollider.motorTorque = 0;
     }
 
-    // The following method decelerates the speed of the car according to the decelerationMultiplier variable, where
-    // 1 is the slowest and 10 is the fastest deceleration. This method is called by the function InvokeRepeating,
-    // usually every 0.1f when the user is not pressing W (throttle), S (reverse) or Space bar (handbrake).
+    // Desacelera a velocidade do carro de acordo com decelerationMultiplier (1 = mais lenta, 10 = mais rápida).
+    // Método chamado por InvokeRepeating, normalmente a cada 0.1f quando não há aceleração, ré ou freio de mão.
     public void DecelerateCar(){
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
@@ -600,7 +587,7 @@ public class PrometeoCarController : MonoBehaviour
         isDrifting = false;
         DriftCarPS();
       }
-      // The following part resets the throttle power to 0 smoothly.
+      // Redefine a potência de aceleração para 0 de forma suave.
       if(throttleAxis != 0f){
         if(throttleAxis > 0f){
           throttleAxis = throttleAxis - (Time.deltaTime * 10f);
@@ -612,20 +599,20 @@ public class PrometeoCarController : MonoBehaviour
         }
       }
       carRigidbody.linearVelocity = carRigidbody.linearVelocity * (1f / (1f + (0.025f * decelerationMultiplier)));
-      // Since we want to decelerate the car, we are going to remove the torque from the wheels of the car.
+      // Como queremos desacelerar, removemos o torque das rodas.
       frontLeftCollider.motorTorque = 0;
       frontRightCollider.motorTorque = 0;
       rearLeftCollider.motorTorque = 0;
       rearRightCollider.motorTorque = 0;
-      // If the magnitude of the car's velocity is less than 0.25f (very slow velocity), then stop the car completely and
-      // also cancel the invoke of this method.
+        // Se a magnitude da velocidade do carro for menor que 0.25f (velocidade muito baixa), pare o carro completamente
+        // e cancele a invocação deste método.
       if(carRigidbody.linearVelocity.magnitude < 0.25f){
         carRigidbody.linearVelocity = Vector3.zero;
         CancelInvoke("DecelerateCar");
       }
     }
 
-    // This function applies brake torque to the wheels according to the brake force given by the user.
+    // Aplica torque de freio às rodas conforme o brakeForce.
     public void Brakes(){
       frontLeftCollider.brakeTorque = brakeForce;
       frontRightCollider.brakeTorque = brakeForce;
@@ -633,14 +620,12 @@ public class PrometeoCarController : MonoBehaviour
       rearRightCollider.brakeTorque = brakeForce;
     }
 
-    // This function is used to make the car lose traction. By using this, the car will start drifting. The amount of traction lost
-    // will depend on the handbrakeDriftMultiplier variable. If this value is small, then the car will not drift too much, but if
-    // it is high, then you could make the car to feel like going on ice.
+    // Faz o carro perder tração, iniciando a derrapagem. A perda de tração depende de handbrakeDriftMultiplier.
+    // Valores menores derrapam pouco; valores altos podem fazer parecer que está no gelo.
     public void Handbrake(){
       CancelInvoke("RecoverTraction");
-      // We are going to start losing traction smoothly, there is were our 'driftingAxis' variable takes
-      // place. This variable will start from 0 and will reach a top value of 1, which means that the maximum
-      // drifting value has been reached. It will increase smoothly by using the variable Time.deltaTime.
+      // Vamos perder tração gradualmente; é onde 'driftingAxis' atua. Esta variável vai de 0 até 1
+      // (máxima derrapagem), aumentando suavemente com Time.deltaTime.
       driftingAxis = driftingAxis + (Time.deltaTime);
       float secureStartingPoint = driftingAxis * FLWextremumSlip * handbrakeDriftMultiplier;
 
@@ -650,16 +635,14 @@ public class PrometeoCarController : MonoBehaviour
       if(driftingAxis > 1f){
         driftingAxis = 1f;
       }
-      //If the forces aplied to the rigidbody in the 'x' asis are greater than
-      //3f, it means that the car lost its traction, then the car will start emitting particle systems.
+      //Se as forças aplicadas ao rigidbody no eixo 'x' forem maiores que 2.5f, indica perda de tração; emitir partículas.
       if(Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
       }else{
         isDrifting = false;
       }
-      //If the 'driftingAxis' value is not 1f, it means that the wheels have not reach their maximum drifting
-      //value, so, we are going to continue increasing the sideways friction of the wheels until driftingAxis
-      // = 1f.
+      //Se 'driftingAxis' não for 1f, as rodas não atingiram a derrapagem máxima; continuar aumentando a
+      //fricção lateral das rodas até 'driftingAxis' = 1f.
       if(driftingAxis < 1f){
         FLwheelFriction.extremumSlip = FLWextremumSlip * handbrakeDriftMultiplier * driftingAxis;
         frontLeftCollider.sidewaysFriction = FLwheelFriction;
@@ -674,15 +657,14 @@ public class PrometeoCarController : MonoBehaviour
         rearRightCollider.sidewaysFriction = RRwheelFriction;
       }
 
-      // Whenever the player uses the handbrake, it means that the wheels are locked, so we set 'isTractionLocked = true'
-      // and, as a consequense, the car starts to emit trails to simulate the wheel skids.
+      // Ao usar o freio de mão, as rodas travam; definimos 'isTractionLocked = true' e o carro passa a emitir trilhas
+      // para simular marcas de derrapagem.
       isTractionLocked = true;
       DriftCarPS();
 
     }
 
-    // This function is used to emit both the particle systems of the tires' smoke and the trail renderers of the tire skids
-    // depending on the value of the bool variables 'isDrifting' and 'isTractionLocked'.
+    // Emite tanto as partículas de fumaça dos pneus quanto as trilhas de derrapagem dependendo de 'isDrifting' e 'isTractionLocked'.
     public void DriftCarPS(){
 
       if(useEffects){
@@ -699,7 +681,7 @@ public class PrometeoCarController : MonoBehaviour
         }
 
         try{
-          if((isTractionLocked || Mathf.Abs(localVelocityX) > 5f) && Mathf.Abs(carSpeed) > 12f){
+          if((isTractionLocked || Mathf.Abs(localVelocityX) > 5f) && Mathf.Abs(carSpeed) > 12f){ // Exibe trilhas quando travado ou derrapando e velocidade > 12
             RLWTireSkid.emitting = true;
             RRWTireSkid.emitting = true;
           }else {
@@ -726,7 +708,7 @@ public class PrometeoCarController : MonoBehaviour
 
     }
 
-    // This function is used to recover the traction of the car when the user has stopped using the car's handbrake.
+    // Recupera a tração do carro quando o usuário para de usar o freio de mão.
     public void RecoverTraction(){
       isTractionLocked = false;
       driftingAxis = driftingAxis - (Time.deltaTime / 1.5f);
@@ -734,9 +716,8 @@ public class PrometeoCarController : MonoBehaviour
         driftingAxis = 0f;
       }
 
-      //If the 'driftingAxis' value is not 0f, it means that the wheels have not recovered their traction.
-      //We are going to continue decreasing the sideways friction of the wheels until we reach the initial
-      // car's grip.
+      //Se 'driftingAxis' não for 0f, as rodas não recuperaram totalmente a tração.
+      //Continuar reduzindo a fricção lateral até alcançar a aderência inicial do carro.
       if(FLwheelFriction.extremumSlip > FLWextremumSlip){
         FLwheelFriction.extremumSlip = FLWextremumSlip * handbrakeDriftMultiplier * driftingAxis;
         frontLeftCollider.sidewaysFriction = FLwheelFriction;
